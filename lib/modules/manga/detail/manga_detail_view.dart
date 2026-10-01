@@ -34,6 +34,7 @@ import 'package:mangayomi/utils/extensions/manga_extensions.dart';
 import 'package:mangayomi/utils/platform_utils.dart';
 import 'package:mangayomi/utils/riverpod.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:mangayomi/yomihub/neko_cover_backdrop.dart';
 
 class MangaDetailView extends ConsumerStatefulWidget {
   final Function(bool) isExtended;
@@ -181,8 +182,12 @@ class _MangaDetailViewState extends ConsumerState<MangaDetailView>
   Widget _buildWidget({required List<Chapter> chapters}) {
     final chapterList = ref.watch(chaptersListStateProvider);
     final isLongPressed = ref.watch(isLongPressedStateProvider);
-    return Stack(
+    return CoverColorTheme(
+      manga: widget.manga!,
+      child: Stack(
       children: [
+        // YomiHub: Nekoyomi-style blurred cover behind the whole page.
+        NekoCoverBackdrop(manga: widget.manga!),
         DetailBanner(manga: widget.manga!, offsetProvider: offetProvider),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -662,6 +667,7 @@ class _MangaDetailViewState extends ConsumerState<MangaDetailView>
           ),
         ),
       ],
+      ),
     );
   }
 

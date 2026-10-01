@@ -18,6 +18,7 @@ import 'package:mangayomi/utils/platform_utils.dart';
 import 'package:mangayomi/l10n/generated/app_localizations.dart';
 import 'package:mangayomi/utils/language.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:mangayomi/yomihub/neko_appearance_screen.dart';
 import 'package:mangayomi/modules/more/settings/appearance/providers/app_ui_scale_state_provider.dart';
 import 'package:mangayomi/modules/widgets/tv_escapable_slider.dart';
 
@@ -174,6 +175,25 @@ class AppearanceScreen extends ConsumerWidget {
                   ),
                   onTap: () {
                     context.push("/customNavigationSettings");
+                  },
+                ),
+                // YomiHub: Nekoyomi-style navigation & detail page options.
+                ListTile(
+                  leading: const Icon(Icons.auto_awesome_outlined),
+                  title: const Text('Giao diện Nekoyomi'),
+                  subtitle: Text(
+                    'Thanh điều hướng nổi, nền bìa mờ, màu theo ảnh bìa',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: context.secondaryColor,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NekoAppearanceScreen(),
+                      ),
+                    );
                   },
                 ),
               ],

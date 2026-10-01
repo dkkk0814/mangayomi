@@ -35,6 +35,8 @@ import 'package:mangayomi/services/sync_server.dart';
 import 'package:mangayomi/utils/extensions/build_context_extensions.dart';
 import 'package:mangayomi/modules/manga/detail/providers/state_providers.dart';
 import 'package:mangayomi/modules/more/providers/incognito_mode_state_provider.dart';
+import 'package:mangayomi/yomihub/neko_floating_nav.dart';
+import 'package:mangayomi/yomihub/neko_ui_prefs.dart';
 
 final libLocationRegex = RegExp(r"^/(Manga|Anime|Novel)Library$");
 
@@ -375,6 +377,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                     _IncognitoModeBar(incognitoMode: incognitoMode, l10n: l10n),
                   Flexible(
                     child: Scaffold(
+                      // YomiHub: let content scroll under the floating bar.
+                      extendBody:
+                          !context.isTablet &&
+                          ref.watch(
+                            nekoUiPrefsProvider.select((p) => p.floatingNav),
+                          ),
                       body: context.isTablet
                           ? _TabletLayout(
                               isLongPressed: isLongPressed,
@@ -1109,28 +1117,29 @@ class _MobileBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // YomiHub: classic or Nekoyomi-style floating bar, sized by user prefs.
+    final prefs = ref.watch(nekoUiPrefsProvider);
+    final hidden = _getBottomNavigationHeight(isLongPressed, location) == 0;
+    final bar = NavigationBarTheme(
+      data: nekoNavBarTheme(context, prefs, floating: prefs.floatingNav),
+      child: NavigationBar(
+        animationDuration: const Duration(milliseconds: 500),
+        selectedIndex: currentIndex,
+        destinations: buildNavigationWidgetsMobile(ref, dest, context),
+        onDestinationSelected: (newIndex) {
+          onDestinationSelected(dest[newIndex]);
+        },
+      ),
+    );
     return AnimatedContainer(
       duration: const Duration(milliseconds: 0),
       width: context.width(1),
-      height: _getBottomNavigationHeight(isLongPressed, location),
-      child: NavigationBarTheme(
-        data: NavigationBarThemeData(
-          labelTextStyle: const WidgetStatePropertyAll(
-            TextStyle(overflow: TextOverflow.ellipsis),
-          ),
-          indicatorShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: NavigationBar(
-          animationDuration: const Duration(milliseconds: 500),
-          selectedIndex: currentIndex,
-          destinations: buildNavigationWidgetsMobile(ref, dest, context),
-          onDestinationSelected: (newIndex) {
-            onDestinationSelected(dest[newIndex]);
-          },
-        ),
-      ),
+      height: hidden ? 0 : null,
+      child: hidden
+          ? const SizedBox.shrink()
+          : prefs.floatingNav
+          ? NekoFloatingNav(prefs: prefs, child: bar)
+          : bar,
     );
   }
 

@@ -63,6 +63,8 @@ import 'package:mangayomi/modules/widgets/memory_overlay.dart';
 import 'package:mangayomi/modules/widgets/app_ui_scale.dart';
 import 'package:mangayomi/modules/more/settings/appearance/providers/app_ui_scale_state_provider.dart';
 
+import 'package:mangayomi/yomihub/neko_ui_prefs.dart';
+
 late Isar isar;
 DiscordRPC? discordRpc;
 WebViewEnvironment? webViewEnvironment;
@@ -114,6 +116,8 @@ void main(List<String> args) async {
       // Detect Android TV / leanback so the UI can branch on form factor.
       // No-op on other platforms. See #729.
       await initIsTv();
+      // YomiHub: Nekoyomi-style UI preferences (Hive box, no Isar schema change).
+      await NekoUiPrefsStore.init();
       // Expensive worker isolates start lazily on first use instead of delaying
       // the first frame.
       if (!isMobile) {
